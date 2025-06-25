@@ -1,5 +1,6 @@
 import { RefObject } from 'react';
 import { TIngredient, TTabMode } from '@utils-types';
+import { InViewHookResponse } from 'react-intersection-observer';
 
 export type BurgerIngredientsUIProps = {
   currentTab: TTabMode;
@@ -9,8 +10,8 @@ export type BurgerIngredientsUIProps = {
   titleBunRef: RefObject<HTMLHeadingElement>;
   titleMainRef: RefObject<HTMLHeadingElement>;
   titleSaucesRef: RefObject<HTMLHeadingElement>;
-  bunsRef: (node?: Element | null | undefined) => void;
-  mainsRef: (node?: Element | null | undefined) => void;
-  saucesRef: (node?: Element | null | undefined) => void;
-  onTabClick: (val: string) => void;
+  bunsRef: InViewHookResponse['ref'];
+  mainsRef: InViewHookResponse['ref'];
+  saucesRef: InViewHookResponse['ref'];
+  onTabClick: (val: TTabMode) => void;
 };
