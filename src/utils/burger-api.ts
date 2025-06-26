@@ -1,14 +1,14 @@
 import { setCookie, getCookie } from './cookie';
 import { TIngredient, TOrder, TOrdersData, TUser } from './types';
 
-const URL = process.env.REACT_APP_BURGER_API_URL;
-const apiBaseUrl = process.env.REACT_APP_BURGER_API_URL;
+const URL = process.env.BURGER_API_URL;
+const apiBaseUrl = process.env.BURGER_API_URL;
 if (!apiBaseUrl) {
   console.warn('[API] Базовый URL не задан в .env');
 } else if (process.env.NODE_ENV === 'development') {
   console.info(`[API] Base URL: ${apiBaseUrl}`);
 }
-
+// console.log('DEBUG ENV BURGER_API_URL:', process.env.BURGER_API_URL);
 const checkResponse = <T>(res: Response): Promise<T> =>
   res.ok ? res.json() : res.json().then((err) => Promise.reject(err));
 
