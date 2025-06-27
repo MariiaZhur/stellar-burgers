@@ -2,7 +2,13 @@ import { setCookie, getCookie } from './cookie';
 import { TIngredient, TOrder, TOrdersData, TUser } from './types';
 
 const URL = process.env.BURGER_API_URL;
-
+const apiBaseUrl = process.env.BURGER_API_URL;
+if (!apiBaseUrl) {
+  console.warn('[API] Базовый URL не задан в .env');
+} else if (process.env.NODE_ENV === 'development') {
+  console.info(`[API] Base URL: ${apiBaseUrl}`);
+}
+// console.log('DEBUG ENV BURGER_API_URL:', process.env.BURGER_API_URL);
 const checkResponse = <T>(res: Response): Promise<T> =>
   res.ok ? res.json() : res.json().then((err) => Promise.reject(err));
 
@@ -43,7 +49,12 @@ export const fetchWithRefresh = async <T>(
     const res = await fetch(url, options);
     return await checkResponse<T>(res);
   } catch (err) {
-    if ((err as { message: string }).message === 'jwt expired') {
+    const errorMessage = (err as { message?: string }).message;
+    if (
+      errorMessage === 'jwt expired' ||
+      errorMessage === 'jwt malformed' ||
+      errorMessage === 'Token is invalid'
+    ) {
       const refreshData = await refreshToken();
       if (options.headers) {
         (options.headers as { [key: string]: string }).authorization =
@@ -92,7 +103,7 @@ export const getOrdersApi = () =>
     method: 'GET',
     headers: {
       'Content-Type': 'application/json;charset=utf-8',
-      authorization: getCookie('accessToken')
+      authorization: `Bearer ${getCookie('accessToken')}`
     } as HeadersInit
   }).then((data) => {
     if (data?.success) return data.orders;
@@ -109,7 +120,7 @@ export const orderBurgerApi = (data: string[]) =>
     method: 'POST',
     headers: {
       'Content-Type': 'application/json;charset=utf-8',
-      authorization: getCookie('accessToken')
+      authorization: `Bearer ${getCookie('accessToken')}`
     } as HeadersInit,
     body: JSON.stringify({
       ingredients: data
@@ -209,7 +220,7 @@ type TUserResponse = TServerResponse<{ user: TUser }>;
 export const getUserApi = () =>
   fetchWithRefresh<TUserResponse>(`${URL}/auth/user`, {
     headers: {
-      authorization: getCookie('accessToken')
+      authorization: `Bearer ${getCookie('accessToken')}`
     } as HeadersInit
   });
 
@@ -218,7 +229,7 @@ export const updateUserApi = (user: Partial<TRegisterData>) =>
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json;charset=utf-8',
-      authorization: getCookie('accessToken')
+      authorization: `Bearer ${getCookie('accessToken')}`
     } as HeadersInit,
     body: JSON.stringify(user)
   });

@@ -1,33 +1,56 @@
-import { FC, useMemo } from 'react';
+import { FC, useEffect, useMemo, useState } from 'react';
 import { Preloader } from '../ui/preloader';
 import { OrderInfoUI } from '../ui/order-info';
-import { TIngredient } from '@utils-types';
+import { TIngredient, TOrder } from '@utils-types';
+import { useParams } from 'react-router-dom';
+import { useAppSelector } from '../../services/hooks';
+import { selectAllIngredients, selectFeedOrders } from '@selectors';
+import { getOrderByNumberApi } from '@api';
 
 export const OrderInfo: FC = () => {
-  /** TODO: взять переменные orderData и ingredients из стора */
-  const orderData = {
-    createdAt: '',
-    ingredients: [],
-    _id: '',
-    status: '',
-    name: '',
-    updatedAt: 'string',
-    number: 0
-  };
+  /** TODO: взять переменные orderData и ingredients из стора (done)*/
+  // Получаем номер заказа из URL
+  const { number } = useParams<{ number: string }>();
 
-  const ingredients: TIngredient[] = [];
+  // Получаем список всех ингредиентов из стора
+  const ingredients = useAppSelector(selectAllIngredients);
+  const orders = useAppSelector(selectFeedOrders);
+
+  // Флаг загрузки (да нет, нет да)
+  const [loading, setLoading] = useState(true);
+
+  // Состояние заказа
+  const [order, setOrder] = useState<TOrder | null>(null);
+
+  // При монтировании пробуем взять заказ из стора, иначе грузим по API
+  useEffect(() => {
+    const found = orders.find((o) => o.number === Number(number));
+
+    if (found) {
+      setOrder(found);
+      setLoading(false);
+    } else {
+      getOrderByNumberApi(Number(number))
+        .then((res) => {
+          if (res.orders && res.orders.length > 0) {
+            setOrder(res.orders[0]);
+          }
+        })
+        .finally(() => setLoading(false));
+    }
+  }, [orders, number]);
 
   /* Готовим данные для отображения */
   const orderInfo = useMemo(() => {
-    if (!orderData || !ingredients.length) return null;
+    if (!order || !ingredients.length) return null;
 
-    const date = new Date(orderData.createdAt);
+    const date = new Date(order.createdAt);
 
     type TIngredientsWithCount = {
       [key: string]: TIngredient & { count: number };
     };
 
-    const ingredientsInfo = orderData.ingredients.reduce(
+    const ingredientsInfo = order.ingredients.reduce(
       (acc: TIngredientsWithCount, item) => {
         if (!acc[item]) {
           const ingredient = ingredients.find((ing) => ing._id === item);
@@ -40,7 +63,6 @@ export const OrderInfo: FC = () => {
         } else {
           acc[item].count++;
         }
-
         return acc;
       },
       {}
@@ -52,14 +74,15 @@ export const OrderInfo: FC = () => {
     );
 
     return {
-      ...orderData,
+      ...order,
       ingredientsInfo,
       date,
       total
     };
-  }, [orderData, ingredients]);
+  }, [order, ingredients]);
 
-  if (!orderInfo) {
+  // Пока нет данных или идёт загрузка — показываем прелоадер
+  if (loading || !orderInfo) {
     return <Preloader />;
   }
 
