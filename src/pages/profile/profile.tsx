@@ -1,18 +1,23 @@
+import { updateUserApi } from '@api';
 import { ProfileUI } from '@ui-pages';
 import { FC, SyntheticEvent, useEffect, useState } from 'react';
-
+import { useAppDispatch, useAppSelector } from '../../services/hooks';
+import { logoutUser, setUser } from '../../services/slices/userSlice';
+import { useLocation } from 'react-router-dom';
+/** TODO: взять переменную из стора (done) */
 export const Profile: FC = () => {
-  /** TODO: взять переменную из стора */
-  const user = {
-    name: '',
-    email: ''
-  };
+  const user = useAppSelector((state) => state.user.user)!;
+  const dispatch = useAppDispatch();
+  const location = useLocation();
+  const pathname = location.pathname;
 
   const [formValue, setFormValue] = useState({
     name: user.name,
     email: user.email,
     password: ''
   });
+
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     setFormValue((prevState) => ({
@@ -27,8 +32,16 @@ export const Profile: FC = () => {
     formValue.email !== user?.email ||
     !!formValue.password;
 
-  const handleSubmit = (e: SyntheticEvent) => {
+  const handleSubmit = async (e: SyntheticEvent) => {
     e.preventDefault();
+    setError(null);
+    try {
+      const response = await updateUserApi(formValue);
+      dispatch(setUser(response.user));
+      setFormValue((prev) => ({ ...prev, password: '' }));
+    } catch (err: any) {
+      setError(err.message || 'Ошибка при обновлении профиля');
+    }
   };
 
   const handleCancel = (e: SyntheticEvent) => {
@@ -46,16 +59,19 @@ export const Profile: FC = () => {
       [e.target.name]: e.target.value
     }));
   };
-
+  const handleLogout = () => {
+    dispatch(logoutUser()); // выход
+  };
   return (
     <ProfileUI
       formValue={formValue}
       isFormChanged={isFormChanged}
+      updateUserError={error || undefined}
       handleCancel={handleCancel}
       handleSubmit={handleSubmit}
       handleInputChange={handleInputChange}
+      handleLogout={handleLogout}
+      pathname={pathname}
     />
   );
-
-  return null;
 };

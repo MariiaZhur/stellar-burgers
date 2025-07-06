@@ -38,3 +38,21 @@ export type TUser = {
 };
 
 export type TTabMode = 'bun' | 'sauce' | 'main';
+
+// Для логина
+export type TLoginRequest = {
+  email: string;
+  password: string;
+};
+
+// Для регистрации
+export type TRegisterRequest = {
+  email: string;
+  password: string;
+  name: string;
+};
+
+export type TAuthResponse = {
+  accessToken: string;
+  refreshToken: string;
+};

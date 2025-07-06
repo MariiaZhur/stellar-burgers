@@ -1,11 +1,13 @@
 import { FC } from 'react';
 import { useLocation } from 'react-router-dom';
 import { ProfileMenuUI } from '@ui';
+import { ProfileMenuUIProps } from '../ui/profile-menu/type';
 
-export const ProfileMenu: FC = () => {
-  const { pathname } = useLocation();
-
-  const handleLogout = () => {};
-
-  return <ProfileMenuUI handleLogout={handleLogout} pathname={pathname} />;
+type Props = {
+  pathname: string;
+  handleLogout: () => void;
 };
+
+export const ProfileMenu: FC<Props> = ({ pathname, handleLogout }) => (
+  <ProfileMenuUI pathname={pathname} handleLogout={handleLogout} />
+);

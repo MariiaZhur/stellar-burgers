@@ -1,28 +1,41 @@
-import { FC } from 'react';
+import { FC, useEffect } from 'react';
 
 import { TOrder } from '@utils-types';
 import { FeedInfoUI } from '../ui/feed-info';
+import { useAppDispatch, useAppSelector } from '../../services/hooks';
+import { loadFeed } from '../../services/slices/feedSlice';
+import { Preloader } from '../ui/preloader';
 
-const getOrders = (orders: TOrder[], status: string): number[] =>
+// Функция для извлечения номеров заказов по статусу
+const extractOrderNumbers = (orders: TOrder[], status: string): number[] =>
   orders
-    .filter((item) => item.status === status)
-    .map((item) => item.number)
-    .slice(0, 20);
+    .filter((order) => order.status === status)
+    .slice(0, 20)
+    .map((order) => order.number);
 
 export const FeedInfo: FC = () => {
-  /** TODO: взять переменные из стора */
-  const orders: TOrder[] = [];
-  const feed = {};
+  const dispatch = useAppDispatch();
 
-  const readyOrders = getOrders(orders, 'done');
+  // Получаем данные из стора
+  const { orders, total, totalToday, loading, errorMessage } = useAppSelector(
+    (state) => state.feed
+  );
 
-  const pendingOrders = getOrders(orders, 'pending');
+  // Если данные загружаются
+  if (loading) return <Preloader />;
+
+  // Если произошла ошибка при загрузке
+  if (errorMessage) return <p>{errorMessage}</p>;
+
+  // Готовые и ожидающие заказы
+  const doneOrders = extractOrderNumbers(orders, 'done');
+  const pendingOrders = extractOrderNumbers(orders, 'pending');
 
   return (
     <FeedInfoUI
-      readyOrders={readyOrders}
+      readyOrders={doneOrders}
       pendingOrders={pendingOrders}
-      feed={feed}
+      feed={{ total, totalToday }}
     />
   );
 };
