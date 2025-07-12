@@ -1,8 +1,9 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { TUser } from '@utils-types';
 import { getUserData } from '../thunks/userThunks';
-import { logoutApi } from '@api';
+
 import { TokenManager } from '../../utils/tokenManager';
+import { logoutApi } from '@api';
 
 type TUserState = {
   user: TUser | null;
