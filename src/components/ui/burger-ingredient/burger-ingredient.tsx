@@ -5,7 +5,8 @@ import styles from './burger-ingredient.module.css';
 import {
   Counter,
   CurrencyIcon,
-  AddButton
+  AddButton,
+  Button
 } from '@zlden/react-developer-burger-ui-components';
 
 import { TBurgerIngredientUIProps } from './type';
@@ -13,9 +14,9 @@ import { TBurgerIngredientUIProps } from './type';
 export const BurgerIngredientUI: FC<TBurgerIngredientUIProps> = memo(
   ({ ingredient, count, handleAdd, locationState }) => {
     const { image, price, name, _id } = ingredient;
-
+    // console.log('render:', name, _id);
     return (
-      <li className={styles.container}>
+      <li className={styles.container} data-cy={`parent-add-button-${_id}`}>
         <Link
           className={styles.article}
           to={`/ingredients/${_id}`}
@@ -32,7 +33,7 @@ export const BurgerIngredientUI: FC<TBurgerIngredientUIProps> = memo(
         <AddButton
           text='Добавить'
           onClick={handleAdd}
-          extraClass={`${styles.addButton} mt-8`}
+          extraClass={`common_button ${styles.addButton} mt-8`}
         />
       </li>
     );

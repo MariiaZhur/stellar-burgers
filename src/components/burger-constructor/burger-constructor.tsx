@@ -24,7 +24,8 @@ export const BurgerConstructor: FC = () => {
   const orderError = useAppSelector(selectOrderError);
   const order = useAppSelector(selectOrder); // Получаем весь заказ
   const user = useAppSelector(selectUserData); // Проверка авторизации
-
+  // console.log('bun:', constructorItems.bun);
+  // console.log('ingredients:', constructorItems.ingredients);
   // Отправка заказа
   const onOrderClick = () => {
     // Если пользователь не авторизован — отправляем на страницу логина
