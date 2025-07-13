@@ -1,3 +1,5 @@
+import { selectors } from '../support/selectors';
+
 describe('Проверка первого захода на страницу конструктора', () => {
   beforeEach(() => {
     // Перехватываем ответ от сервера и подставляем свой набор ингредиентов
@@ -26,7 +28,7 @@ describe('Проверка первого захода на страницу к�
 
   it('отображает булку и начинку из моков', () => {
     // Проверяем, что загруженные ингредиенты видны на странице
-    cy.contains('Булка кукурузно-галюценогенная').should('be.visible');
-    cy.contains('Мясо ультрофиолетового сияния').should('exist');
+    cy.contains(selectors.bunName).should('be.visible');
+    cy.contains(selectors.mainName).should('exist');
   });
 });

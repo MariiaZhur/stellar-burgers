@@ -1,3 +1,5 @@
+import { selectors } from '../support/selectors';
+
 describe('Проверка первого захода на страницу конструктора', () => {
   beforeEach(() => {
     // Перехватываем ответ от сервера и подставляем свой моковый набор ингредиентов
@@ -26,31 +28,27 @@ describe('Проверка первого захода на страницу к�
 
   it('добавляет ингредиенты и выводит номер заказа', () => {
     // Добавляем булку
-    cy.get('[data-cy="parent-add-button-bun-11"]', { timeout: 10000 })
+    cy.get(selectors.addBunButton, { timeout: 10000 })
       .children('button')
       .click();
 
     // Проверяем, что булка отобразилась
-    cy.contains('Булка кукурузно-галюценогенная', {
-      timeout: 10000
-    }).should('exist');
+    cy.contains(selectors.bunName, { timeout: 10000 }).should('exist');
 
     // Добавляем начинку
-    cy.get('[data-cy="parent-add-button-main-13"]', { timeout: 10000 })
+    cy.get(selectors.addMainButton, { timeout: 10000 })
       .children('button')
       .click();
 
     // Проверяем, что начинка появилась
-    cy.contains('Мясо ультрофиолетового сияния', { timeout: 10000 }).should(
-      'exist'
-    );
+    cy.contains(selectors.mainName, { timeout: 10000 }).should('exist');
 
     // Нажимаем кнопку оформления
-    cy.get('[data-cy="burger-order-btn"]').click();
+    cy.get(selectors.orderButton).click();
 
     // Проверяем, что заказ ушёл
     cy.wait('@createOrder');
-    cy.get('[data-cy="modal"]').should('exist');
+    cy.get(selectors.modal).should('exist');
     cy.contains('121121').should('exist');
   });
 });

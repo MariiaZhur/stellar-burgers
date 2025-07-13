@@ -1,5 +1,5 @@
 // Тестируем редьюсер constructorBurgerSlice (сборка бургера)
-// Покрываем основные действия(добавление, удаление, перемещение, очистка)
+// Покрываем основные действия (добавление, удаление, перемещение, очистка)
 
 import constructorReducer, {
   addBun,
@@ -11,6 +11,17 @@ import constructorReducer, {
 } from '../services/slices/constructorBurgerSlice';
 
 import { bunMock, sauceMock, mainMock } from '../__mocks__/ingredientsMock';
+
+// ==== вынесенные повторяющиеся состояния для дальнейших тестов ====
+const emptyConstructor = {
+  bun: null,
+  ingredients: []
+};
+
+const filledConstructor = {
+  bun: bunMock,
+  ingredients: [mainMock, sauceMock]
+};
 
 describe('[constructorBurgerSlice] Тесты логики конструктора бургера', () => {
   test('добавляет bun в конструктор', () => {
@@ -24,7 +35,7 @@ describe('[constructorBurgerSlice] Тесты логики конструкто�
   });
 
   test('добавляем ингредиент в список начинок', () => {
-    const initialState = { bun: null, ingredients: [] };
+    const initialState = emptyConstructor;
 
     const result = constructorReducer(initialState, addIngredient(mainMock));
 
@@ -82,10 +93,7 @@ describe('[constructorBurgerSlice] Тесты логики конструкто�
   });
 
   test('очищает весь конструктор (булку и ингредиенты)', () => {
-    const initialState = {
-      bun: bunMock,
-      ingredients: [mainMock, sauceMock]
-    };
+    const initialState = filledConstructor;
 
     const result = constructorReducer(initialState, clearConstructor());
 

@@ -1,3 +1,5 @@
+import { selectors } from '../support/selectors';
+
 describe('Модальное окно ингредиента', () => {
   beforeEach(() => {
     // Подключаем наши моки
@@ -19,31 +21,31 @@ describe('Модальное окно ингредиента', () => {
 
   it('открывает модалку при клике на ингредиент', () => {
     // Кликаем по ингредиенту
-    cy.contains('Булка кукурузно-галюценогенная').click();
+    cy.contains(selectors.bunName).click();
 
     // Проверяем, что модалка появилась
-    cy.get('[data-cy="modal"]').should('exist');
+    cy.get(selectors.modal).should('exist');
   });
 
   it('закрывает модалку по кнопке крестика', () => {
     // Открываем модалку
-    cy.contains('Мясо ультрофиолетового сияния').click();
+    cy.contains(selectors.mainName).click();
 
     // Закрываем
-    cy.get('[data-cy="modalClose"]').click();
+    cy.get(selectors.modalClose).click();
 
     // Проверяем что исчезла
-    cy.get('[data-cy="modal"]').should('not.exist');
+    cy.get(selectors.modal).should('not.exist');
   });
 
   it('закрывает модалку по фону', () => {
     // Открываем
-    cy.contains('Соус Spicy-X').click();
+    cy.contains(selectors.sauceName).click();
 
     // Кликаем по оверлею
-    cy.get('[data-cy="modalCloseOverlay"]').click({ force: true });
+    cy.get(selectors.modalCloseOverlay).click({ force: true });
 
     // Проверяем что закрылась
-    cy.get('[data-cy="modal"]').should('not.exist');
+    cy.get(selectors.modal).should('not.exist');
   });
 });

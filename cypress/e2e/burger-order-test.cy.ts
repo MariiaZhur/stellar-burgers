@@ -1,3 +1,5 @@
+import { selectors } from '../support/selectors';
+
 describe('Оформление заказа и очистка конструктора', () => {
   beforeEach(() => {
     // Моки для ингредиентов, пользователя и заказа
@@ -22,40 +24,34 @@ describe('Оформление заказа и очистка конструкт
 
   it('оформляет заказ и показывает номер', () => {
     // Добавляем булку и начинку
-    cy.get('[data-cy="parent-add-button-bun-11"]').children('button').click();
-    cy.get('[data-cy="parent-add-button-main-13"]').children('button').click();
+    cy.get(selectors.addBunButton).children('button').click();
+    cy.get(selectors.addMainButton).children('button').click();
 
     // Кликаем "Оформить заказ"
-    cy.get('[data-cy="burger-order-btn"]').click();
+    cy.get(selectors.orderButton).click();
 
     // Проверяем модалку и номер заказа
     cy.wait('@createOrder');
-    cy.get('[data-cy="modal"]').should('exist');
+    cy.get(selectors.modal).should('exist');
     cy.contains('121121').should('exist');
   });
 
   it('закрывает модалку заказа и очищает бургер', () => {
     // Добавляем ингредиенты и оформляем
-    cy.get('[data-cy="parent-add-button-bun-11"]').children('button').click();
-    cy.get('[data-cy="parent-add-button-main-13"]').children('button').click();
-    cy.get('[data-cy="burger-order-btn"]').click();
+    cy.get(selectors.addBunButton).children('button').click();
+    cy.get(selectors.addMainButton).children('button').click();
+    cy.get(selectors.orderButton).click();
     cy.wait('@createOrder');
-    cy.get('[data-cy="modal"]').should('exist');
+    cy.get(selectors.modal).should('exist');
 
     // Закрываем модалку
-    cy.get('[data-cy="modalClose"]').click();
+    cy.get(selectors.modalClose).click();
 
     // Проверяем, что закрылась
-    cy.get('[data-cy="modal"]').should('not.exist');
+    cy.get(selectors.modal).should('not.exist');
 
     // Проверяем, что бургер пуст
-    cy.get('[data-cy="burgerConstructor"]').should(
-      'not.contain',
-      'Булка кукурузно-галюценогенная'
-    );
-    cy.get('[data-cy="burgerConstructor"]').should(
-      'not.contain',
-      'Мясо ультрофиолетового сияния'
-    );
+    cy.get(selectors.constructorArea).should('not.contain', selectors.bunName);
+    cy.get(selectors.constructorArea).should('not.contain', selectors.mainName);
   });
 });
